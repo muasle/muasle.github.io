@@ -1,2 +1,3 @@
 Base: #343130
+Text: #f7f0ed
 

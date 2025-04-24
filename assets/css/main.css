@@ -85,7 +85,7 @@ input, select, textarea {
 		background: #D4D9DD url("images/bg03.jpg");
 		color: #474f51;
 		font-size: 13.5pt;
-		font-family: 'Yanone Kaffeesatz';
+		font-family: 'Courier New';
 		line-height: 1.85em;
 		font-weight: 300;
 	}
@@ -93,7 +93,7 @@ input, select, textarea {
 	input, textarea, select {
 		color: #474f51;
 		font-size: 13.5pt;
-		font-family: 'Yanone Kaffeesatz';
+		font-family: 'Courier New';
 		line-height: 1.85em;
 		font-weight: 300;
 	}
@@ -1511,10 +1511,7 @@ input, select, textarea {
 
 	#header {
 		position: relative;
-		background: #3B4346 url("images/bg01.jpg");
-		border-bottom: solid 1px #272d30;
-		box-shadow: inset 0px -1px 0px 0px #51575a;
-		text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.75);
+		background: #343130;
 	}
 
 		#header > .container {
@@ -1530,7 +1527,7 @@ input, select, textarea {
 		}
 
 			#header h1 a {
-				color: #fff;
+				color: #f7f0ed;
 				text-decoration: none;
 			}
 

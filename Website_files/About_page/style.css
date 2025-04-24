@@ -1,0 +1,123 @@
+/* Colors */
+:root {
+    --primary-color: #bebfc4b9;
+    --secondary-color: #F44336;
+  }
+  
+  /* Typography */
+  body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: rgb(81, 80, 80);
+    font-size: 18px;
+    line-height: 1.6;  
+    
+  }
+  
+  h1, h2 {
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+ }
+
+  h1 {
+    font-size: 50px;
+    font-weight: 700;
+    color: rgb(164, 161, 161);
+  }
+  
+  /* Header */
+  header {
+    background-color:grey;
+  }
+  
+  header a {
+    color: black;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Hero Section */  
+  .hero {
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1473773508845-188df298d2d1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDl8fE5hdHVyZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=900&q=60'); 
+    background-size: 1300px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+    font-size: 32px;
+  }
+  
+  .hero .content {
+    max-width: 600px;
+    color: white;  
+    
+  }
+  
+  /* Posts */
+  .posts {
+    padding: 50px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+  }
+  
+  .posts img {
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;  
+  }
+  
+  .posts img:hover {
+    transform: scale(1.05);
+  }
+  
+  .posts .meta {
+    display: flex;
+    font-size: 14px;
+    color: #323131;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  
+  .posts .category {
+    color: var(--secondary-color);
+  }
+  
+  /* Footer */
+  footer {
+    background-color: rgb(2, 76, 2);
+    color: white;
+    padding: 50px 0;
+  }
+  
+  footer p {
+    margin: 0;
+    font-size: 14px; 
+  }
+  
+  /* Other Styles */
+  body {
+    margin: 0 100px;
+  }
+  
+  section {
+    padding: 80px 0;  
+  }
+  
+  a {
+    color: var(--primary-color);
+    transition: all 0.3s ease;
+  }
+  
+  a:hover {
+    color: var(--secondary-color);
+  }

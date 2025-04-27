@@ -1,0 +1,197 @@
+:root {
+  --background: #363231;
+  --text: #f7f0ed;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;  /* Ensure the page takes at least the full height */
+  background-color: var(--background);
+  overflow-x: hidden;  /* Disable horizontal scrolling */
+}
+
+body {
+  overflow-y: auto;  /* Allow vertical scrolling */
+}
+
+nav {
+  width: 100%;
+  height: 10vh;
+  position: sticky;
+}
+
+h1 {
+  font-size: 1.7rem;
+  color: var(--text);
+  font-weight: 515;
+  margin-bottom: 3.5rem;
+}
+
+p {
+  font-size: 1rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+figcaption {
+  margin-top: 5px;
+  font-size: 0.6rem;
+  color: var(--text);
+}
+
+.nav-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.nav-container .logo span {
+  font-size: 2.5rem;
+  font-weight: 525;
+  color: var(--text);
+}
+
+.nav-container .links {
+  display: flex;
+}
+
+.nav-container .links .link {
+  font-size: 1.5rem;
+  color: var(--text);
+  margin: 0 20px;
+  text-decoration: none;
+  font-weight: medium;
+  transition: 0.3s linear;
+  border-bottom: 2px solid transparent; /* <-- add transparent border */
+}
+
+.nav-container .links .link:hover {
+  color: var(--text);
+  border-bottom: 2px solid var(--text); /* <-- just change color on hover */
+}
+
+/* Home */
+
+.main-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;  /* center horizontally */
+  align-items: center;      /* center vertically */
+}
+
+.main-container .homeimage {
+  width: 600px;
+  height: auto;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 50px; /* move down */
+}
+
+.main-container .homeimage img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* About */
+
+.about-container1 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.about-container1 .aboutimage img {
+  width: 65%;
+  height: auto;
+  max-width: 500px;
+}
+
+.content1 {
+  width: 50%;
+  padding: 20px;  /* Ensure text content has space around it */
+  text-align: left;  /* Ensure text is aligned to the left */
+  margin-left: 85px;
+}
+
+.about-container2 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  padding: 10px;
+}
+
+.content2 {
+  width: 100%;
+  padding: 20px;  /* Ensure text content has space around it */
+  text-align: left;  /* Ensure text is aligned to the left */
+  margin-left: 85px;
+  margin-right: 85px;
+}
+
+.about-container3 {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+.about-container3 .aboutimage2 {
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  margin-left: 130px;
+}
+
+.about-container3 .aboutimage2 img {
+  width: 300px;
+  height: auto;
+  max-width: 100%;
+}
+
+.content3 {
+  width: 60%;
+  padding: 20px;  /* Ensure text content has space around it */
+  text-align: left;  /* Ensure text is aligned to the left */
+  margin-right: 85px;
+}
+
+.about-container4 {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  padding: 10px;
+}
+
+.content4 {
+  width: 100%;
+  padding: 20px;  /* Ensure text content has space around it */
+  text-align: left;  /* Ensure text is aligned to the left */
+  margin-left: 85px;
+  margin-right: 85px;
+}

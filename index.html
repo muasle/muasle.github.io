@@ -8,14 +8,19 @@
 	</head>
 
 	<body>
+		<div id="loader">
+			<pre><code id="code-display"></code></pre>
+		</div>
+
+		<main id="page-content" style="display: none;">
 		<nav>
 			<div class="nav-container">
 				<div class="logo">
-					<span>&lt;/Samuel Ellis&gt;</span>
+					<span>Samuel Ellis</span>
 				</div>
 				<div class="links">
 					<a class="link">Home</a>
-  					<a class="link" href="about.html">About Me</a>
+					<a class="link" href="about.html">About Me</a>
   					<a class="link" href="projects.html">Projects</a>
   					<a class="link" href="contact.html">Contact</a>
 				</div>
@@ -24,10 +29,45 @@
 
 		<section>
 			<div class="main-container">
-				<div class="homeimage">
-					<img src="./images/homeimage.PNG" alt="">
+				<div class="code-display-container">
+					<pre><code id="final-code-display"></code></pre> <!-- Add this to show the final code -->
 				</div>
 			</div>
 		</section>
+		</main>
+
+		<script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const codeLines = [
+                "function helloWorld() {",
+                "    console.log('Welcome to my portfolio.');",
+                "}",
+                "",
+                "helloWorld();"
+            ];
+
+            const loader = document.getElementById("loader");
+            const pageContent = document.getElementById("page-content");
+            const codeDisplay = document.getElementById("code-display");
+            const finalDisplay = document.getElementById("final-code-display");
+
+            let lineIndex = 0;
+
+            function typeLine() {
+                if (lineIndex < codeLines.length) {
+                    codeDisplay.innerHTML += codeLines[lineIndex] + "\n";
+                    lineIndex++;
+                    setTimeout(typeLine, 400);
+                } else {
+                    // Copy code to final display and show the page
+                    finalDisplay.textContent = codeDisplay.textContent;
+                    loader.style.display = "none";
+                    pageContent.style.display = "block";
+                }
+            }
+
+            typeLine(); // Start typing animation
+        });
+    	</script>
 	</body>
 </html>

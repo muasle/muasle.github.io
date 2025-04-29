@@ -28,10 +28,17 @@ nav {
 }
 
 h1 {
-  font-size: 1.7rem;
+  font-size: 1.9rem;
   color: var(--text);
   font-weight: 515;
   margin-bottom: 3.5rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: var(--text);
+  font-weight: 515;
+  margin-bottom: 3px;
 }
 
 p {
@@ -149,6 +156,12 @@ figcaption {
   margin-right: 85px;
 }
 
+.content2 p {
+  font-size: 0.9rem;
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
 .about-container3 {
   width: 100%;
   display: flex;
@@ -195,3 +208,4 @@ figcaption {
   margin-left: 85px;
   margin-right: 85px;
 }
+

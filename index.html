@@ -8,15 +8,17 @@
 	</head>
 
 	<body>
-		<div id="loader">
-			<pre><code id="code-display"></code></pre>
+		<div id="loader-wrapper">
+			<div id="loader">
+				<pre id="code-display"></pre><span class="blinking-cursor">|</span>
+			</div>
 		</div>
 
 		<main id="page-content" style="display: none;">
 		<nav>
 			<div class="nav-container">
 				<div class="logo">
-					<span>Samuel Ellis</span>
+					<span>&lt;/Samuel Ellis&gt;</span>
 				</div>
 				<div class="links">
 					<a class="link">Home</a>
@@ -28,46 +30,87 @@
 		</nav>
 
 		<section>
-			<div class="main-container">
-				<div class="code-display-container">
-					<pre><code id="final-code-display"></code></pre> <!-- Add this to show the final code -->
+            <div class="main-container">
+                <div class="main-container">
+					<div class="code-display-container">
+						<pre><code id="final-code-display"></code></pre>
+					</div>
 				</div>
-			</div>
-		</section>
+            </div>
+        </section>
 		</main>
 
 		<script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const codeLines = [
-                "function helloWorld() {",
-                "    console.log('Welcome to my portfolio.');",
-                "}",
-                "",
-                "helloWorld();"
-            ];
+			document.addEventListener("DOMContentLoaded", () => {
+				const codeLines = [
+					"def hello_world():",
+					"    for object in website:",
+					"    	initialize_title(Samuel Ellis)",
+					"    	load_links()",
+					"    	importCV(PDF)",
+					"    	display_cat_pictures()",
+					"    	print('Finished!')",
+        			"",
+        			"if __name__ == '__main__':",
+        			"    hello_world()",
+					"    print('Welcome to my portfolio.')"
+					];
+		
+				const loaderWrapper = document.getElementById("loader-wrapper");
+            	const loader = document.getElementById("loader");
+            	const pageContent = document.getElementById("page-content");
+            	const codeDisplay = document.getElementById("code-display");
+            	const finalDisplay = document.getElementById("final-code-display");
+            	const mainCodeDisplayContainer = document.querySelector(".main-container .code-display-container");
+            	const cursor = document.querySelector(".blinking-cursor");
 
-            const loader = document.getElementById("loader");
-            const pageContent = document.getElementById("page-content");
-            const codeDisplay = document.getElementById("code-display");
-            const finalDisplay = document.getElementById("final-code-display");
+            	let lineIndex = 0;
+            	let charIndex = 0;
 
-            let lineIndex = 0;
+            	function typeCharacter() {
+                	if (lineIndex < codeLines.length) {
+                    	const currentLine = codeLines[lineIndex];
+                    	if (charIndex < currentLine.length) {
+                        	const char = currentLine[charIndex];
+                        	const escapedChar = char === "<" ? "&lt;" : (char === ">" ? "&gt;" : char);
+                        	codeDisplay.textContent += escapedChar;
+                        	charIndex++;
+                        	setTimeout(typeCharacter, 50);
+                    	} else {
+                        	codeDisplay.textContent += "\n";
+                        	lineIndex++;
+                        	charIndex = 0;
+                        	setTimeout(typeCharacter, 200);
+                    	}
+                	} else {
+                    	// Typing animation complete
+                    	fadeOutLoader();
+                    	showFinalCode();
+                    	fadeInHomepageContent();
+                	}
+            	}
 
-            function typeLine() {
-                if (lineIndex < codeLines.length) {
-                    codeDisplay.innerHTML += codeLines[lineIndex] + "\n";
-                    lineIndex++;
-                    setTimeout(typeLine, 400);
-                } else {
-                    // Copy code to final display and show the page
-                    finalDisplay.textContent = codeDisplay.textContent;
-                    loader.style.display = "none";
-                    pageContent.style.display = "block";
-                }
-            }
+            	function fadeOutLoader() {
+                	loaderWrapper.style.opacity = 0;
+                	setTimeout(() => {
+                    	loaderWrapper.style.display = "none";
+                	}, 500); // Match CSS transition
+            	}
 
-            typeLine(); // Start typing animation
-        });
+            	function showFinalCode() {
+                	finalDisplay.textContent = codeDisplay.textContent;
+                	mainCodeDisplayContainer.style.display = "block";
+            	}
+
+            	function fadeInHomepageContent() {
+                	pageContent.style.display = "block";
+                	// Force reflow
+                	pageContent.offsetHeight;
+                	pageContent.style.opacity = 1;
+            	}
+
+            	typeCharacter(); // Start typing animation
+        	});
     	</script>
 	</body>
 </html>

@@ -124,12 +124,67 @@ figcaption {
   object-fit: contain;
 }
 
+/* Code Display */
+
+#loader-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--background);
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.5s ease-out; /* Fade out transition for the loader background */
+}
+
+#loader {
+  background-color: #2d2d2d;
+  padding: 40px;
+  border-radius: 10px;
+  max-width: 800px;
+  width: 80%;
+  text-align: left;
+}
+
+#code-display {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.blinking-cursor {
+  display: inline-block;
+  width: 0.75em;
+  background-color: var(--text);
+  margin-left: 0.1em;
+  animation: blink 1s infinite step-end;
+}
+
+@keyframes blink {
+  50% {
+      opacity: 0;
+  }
+}
+
+#page-content {
+  display: none; /* Initially hidden */
+  opacity: 0;
+  transition: opacity 0.5s ease-in; /* Fade in transition */
+  position: relative; /* To position elements within if needed */
+}
+
 .code-display-container {
   background-color: #2d2d2d;
   padding: 40px;
   border-radius: 10px;
   width: 80%;
   max-width: 800px;
+  margin: 20px auto; /* Center the code snippet */
+  opacity: 1; /* Make sure it's visible */
 }
 
 #final-code-display {
@@ -137,44 +192,22 @@ figcaption {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--text);
-  position: relative;
 }
 
-/* Optional: Blinking Cursor */
-#code-display::after {
-  content: "|";
-  animation: blink 1s step-start infinite;
-  position: absolute;
+/* Initially hide the final code display */
+.main-container .code-display-container {
+  display: none;
 }
 
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-#loader {
+/* Adjust main container to allow content around the code */
+.main-container {
+  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: var(--background);
-  color: var(--text);
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center items horizontally */
+  padding-top: 20px; /* Add some top padding */
 }
 
-#loader pre {
-  font-size: 1rem;
-  line-height: 1.6;
-  background-color: #2d2d2d;
-  padding: 40px;
-  border-radius: 10px;
-  max-width: 800px;
-  width: 80%;
-}
-
-#loader code::after {
-  content: "|";
-  animation: blink 1s step-start infinite;
-  position: absolute;
-}
 
 /* About */
 

@@ -31,12 +31,10 @@
 
 		<section>
             <div class="main-container">
-                <div class="main-container">
-					<div class="code-display-container">
-						<pre><code id="final-code-display"></code></pre>
-					</div>
+				<div class="code-display-container">
+					<pre><code id="final-code-display"></code></pre>
 				</div>
-            </div>
+			</div>
         </section>
 		</main>
 
@@ -45,7 +43,6 @@
 				const codeLines = [
 					"def hello_world():",
 					"    for object in website:",
-					"    	initialize_title(Samuel Ellis)",
 					"    	load_links()",
 					"    	importCV(PDF)",
 					"    	display_cat_pictures()",
@@ -66,8 +63,10 @@
 
             	let lineIndex = 0;
             	let charIndex = 0;
+				let typingCancelled = false;
 
             	function typeCharacter() {
+					if (typingCancelled) return;
                 	if (lineIndex < codeLines.length) {
                     	const currentLine = codeLines[lineIndex];
                     	if (charIndex < currentLine.length) {
@@ -83,12 +82,17 @@
                         	setTimeout(typeCharacter, 200);
                     	}
                 	} else {
-                    	// Typing animation complete
-                    	fadeOutLoader();
-                    	showFinalCode();
-                    	fadeInHomepageContent();
+                    	completeLoading();
                 	}
             	}
+
+				function completeLoading() {
+					if (typingCancelled) return;
+					typingCancelled = true;
+					fadeOutLoader();
+					showFinalCode();
+					fadeInHomepageContent();
+				}
 
             	function fadeOutLoader() {
                 	loaderWrapper.style.opacity = 0;
@@ -108,6 +112,15 @@
                 	pageContent.offsetHeight;
                 	pageContent.style.opacity = 1;
             	}
+
+				document.addEventListener("click", () => {
+					if (!typingCancelled) {
+						typingCancelled = true;
+						showFinalCode(); // Show full code
+						fadeOutLoader();
+						fadeInHomepageContent();
+					}
+				});
 
             	typeCharacter(); // Start typing animation
         	});

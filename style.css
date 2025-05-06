@@ -351,3 +351,26 @@ figcaption {
 
 
 /* Contact */
+
+.contact-links ul {
+	list-style: none;
+	display: flex;
+	gap: 40px;
+	padding: 0;
+	justify-content: center;
+	margin: 20px 0;
+}
+
+.contact-links li {
+	font-size: 3em;
+}
+
+.contact-links a {
+	color: var(--text);
+	transition: color 0.3s ease;
+}
+
+.contact-links a:hover {
+  color: var(--text);
+  border-bottom: 2px solid var(--text);
+}

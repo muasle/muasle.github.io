@@ -64,8 +64,9 @@ figcaption {
   color: var(--text);
 }
 
-.hamburger {
-  display: none; /* Hide hamburger on desktop */
+.logo {
+  text-decoration: none;
+  color: inherit;
 }
 
 .nav-container {

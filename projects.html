@@ -23,6 +23,7 @@
 		</nav>
 
 		<section>
+            <div class="padding">
             <div class="project-container">
 
                 <!-- Project Title and Audiovisuals -->
@@ -39,6 +40,10 @@
                     <div class="project-text">
                         <h3>Through the TV (2024)</h3>
                         <p>Digital Composition</p>
+                        <button class="toggle-button">Show Program Notes</button>
+                        <div class="program-notes hidden">
+                            <p>Through the TV explores the experience I had growing up transgender. I remember during the first stages of discovering my identity, deeply struggling with how I would be perceived, and in turn, struggling with accepting my future as a minority. I remember using media entertainment as a distraction, trying to ignore my own inner turmoil, but even then I was bombarded with hateful messages and propaganda. I am extremely lucky to have resources and a support system that carried me out of this difficult time in my life. However, most transgender youth do not, and the experience of living a life full of hatred is far too normal. This piece showcases my story and I hope that it gives confidence to trans kids today. It does in fact get better.</p>
+                        </div>
                     </div>
                     <div class="project-audio">
                         <audio controls>
@@ -53,6 +58,10 @@
                     <div class="project-text">
                         <h3>Cyclones (2024)</h3>
                         <p>Data Sonification of OOI Data Lab Project Titled: “Turbulent Mixing from Extratropical Storm Hermine”</p>
+                        <button class="toggle-button">Show Program Notes</button>
+                        <div class="program-notes hidden">
+                            <p>Cyclones uses original narration, describing the natural disaster dubbed a cyclone. The piece is ornamented with audio clips of waves and uses a Kyma algorithm matching the data found in the OOI Data Lab’s study: “Turbulent Mixing from Extratropical Storm Hermine”.</p>
+                        </div>
                     </div>
                     <div class="project-audio">
                         <audio controls>
@@ -69,6 +78,10 @@
                         <p>Composed by Joe Hisaishi, Arranged by Musik Kanal</p>
                         <p>Sound Design and Recording by Samuel Ellis</p>
                         <p>Performed by Aspen Denney, Jacob Taylor, Rilei Smith, and Cedric De Klerk</p>
+                        <button class="toggle-button">Show Program Notes</button>
+                        <div class="program-notes hidden">
+                            <p>I was introduced to the film Spirited Away by my partner Aspen Denney. Wanting to expand my skills in audio recording, I thought that this piece exploring the film’s main theme would be a perfect fit. My wonderful friends brought this piece to life using three soprano clarinets and one bass clarinet. I added the addition of ambient sounds in order to match the nature-esc imagery Studio Ghibli films provide.</p>
+                        </div>
                     </div>
                     <div class="project-audio">
                         <audio controls>
@@ -91,6 +104,10 @@
                     <div class="project-text">
                         <h3>Lampscape (2024)</h3>
                         <p>For Three Lamps programmed with Max/MSP and Ableton</p>
+                        <button class="toggle-button">Show Program Notes</button>
+                        <div class="program-notes hidden">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+                        </div>
                     </div>
                     <div class="project-video">
                         <iframe width="100%" height="200" src="https://www.youtube.com/embed/puRO_N0ffl8"
@@ -103,6 +120,12 @@
                     <div class="project-text">
                         <h3>440 Hz (2023)</h3>
                         <p>Digital Composition Paired with Original Graphic Score</p>
+                        <button class="toggle-button">Show Program Notes</button>
+                        <div class="program-notes hidden">
+                            <p>440 Hz is based on my experience going to my first professional orchestra concert. I remember the ambient hall, hearing the musicians practice small excerpts along with the shuffling of paper and stands on stage. I recall the sea of patrons, conversing quietly while trying to find their seats. Immersed and excited for the upcoming performance, I almost didn’t notice the concertmaster appear and begin tuning the ensemble.</p>
+                            <p>The mass of sound that arose from every instrument, in every direction, filled the hall. Timbres bounced off each other and overtones created harmonies in space. The simple unified pitch of “A” created a beautiful soundscape, rapturing the attention of everyone in the audience. This frequency wasn’t just a tuning note, it was a prelude to what was about to come.</p>
+                            <p>440 Hz explores the expansion of this simple tuning exercise, highlighting interwoven harmonies of acoustic instruments. The paired graphic score visualizes the movement of these overtones, showcasing how a single pitch can be reimagined and altered over time.</p>
+                        </div>
                     </div>
                     <div class="project-video">
                         <iframe width="100%" height="215" src="https://www.youtube.com/embed/v42b4Fg1h1Q"
@@ -115,6 +138,10 @@
                     <div class="project-text">
                         <h3>Remake of Link’s Awakening for Switch Trailer (2023)</h3>
                         <p>Video from Nintendo, Sound Design and Arrangement by Samuel Ellis</p>
+                        <button class="toggle-button">Show Program Notes</button>
+                        <div class="program-notes hidden">
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+                        </div>
                     </div>
                     <div class="project-video">
                         <iframe width="100%" height="200" src="https://www.youtube.com/embed/BWUMbkArCCU"
@@ -123,6 +150,15 @@
                 </div>
                 
             </div>
+            </div>
         </section>
+        <script>
+            document.querySelectorAll('.toggle-button').forEach(button => {
+            button.addEventListener('click', () => {
+            const notes = button.nextElementSibling;
+            notes.classList.toggle('active');
+            });
+        });
+        </script>
 	</body>
 </html>

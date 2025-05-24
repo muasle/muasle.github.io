@@ -70,7 +70,7 @@ figcaption {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding-top: 20px;
+  padding-top: 30px;
 }
 
 .nav-container .logo span {
@@ -98,6 +98,8 @@ figcaption {
   border-bottom: 2px solid var(--text); /* <-- just change color on hover */
 }
 
+
+
 /* Home */
 
 .main-container {
@@ -123,6 +125,8 @@ figcaption {
   height: auto;
   object-fit: contain;
 }
+
+
 
 /* Code Display */
 
@@ -209,7 +213,12 @@ figcaption {
 }
 
 
+
 /* About */
+
+.padding {
+  padding: 0 200px;
+}
 
 .about-container1 {
   width: 100%;
@@ -217,18 +226,16 @@ figcaption {
   justify-content: space-between;
   align-items: center;
   gap: 30px;
-  padding: 10px;
-  margin-top: 10px;
 }
 
 .about-container1 .aboutimage img {
   width: 65%;
   height: auto;
-  max-width: 500px;
+  max-width: 450px;
 }
 
 .content1 {
-  width: 50%;
+  width: 70%;
   padding: 20px;  /* Ensure text content has space around it */
   text-align: left;  /* Ensure text is aligned to the left */
   margin-left: 85px;
@@ -298,6 +305,8 @@ figcaption {
   margin-right: 85px;
 }
 
+
+
 /* Projects */
 
 .project-container {
@@ -347,6 +356,43 @@ figcaption {
 .project-container p {
   font-style: italic;
   margin-bottom: 0.2rem;
+}
+
+.program-notes {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.4s ease, opacity 0.4s ease;
+  font-size: 0.95rem;
+  color: var(--text);
+  margin-top: 10px;
+}
+
+.program-notes p{
+  padding-bottom: 10px;
+  font-style: normal;
+}
+
+/* Visible state */
+.program-notes.active {
+  max-height: 500px; /* Large enough to show full content */
+  opacity: 1;
+}
+
+.toggle-button {
+  margin-top: 8px;
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--text);
+  color: var(--text);
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.toggle-button:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 

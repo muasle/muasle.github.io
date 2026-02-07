@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=SN+Pro:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    
+    <meta charset="UTF-8">
+    <title>Trivia Time!</title>
+    <link rel="stylesheet" href="../css/secret.css">
+</head>
+<body>
+    <h1>TRIVIA CHALLENGE</h1>
+    
+    <div id="trivia-container">
+        <div id="question-box">
+            <h2 id="question-text">Question goes here?</h2>
+            <div id="input-area">
+                <input type="text" id="answer-input" placeholder="Type your answer..." autocomplete="off">
+                <button id="submit-btn">Submit</button>
+            </div>
+        </div>
+        <button id="next-btn" style="display: none;">next level➔</button>
+    </div>
+
+    <div id="controls">
+        <p id="message"></p>
+        <button id="back-btn" onclick="window.location.href='tiles.html'">Back to Puzzle</button>
+    </div>
+
+    <script src="../scripts/trivia.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Samuel Ellis</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="../css/style.css">
+		<link rel="stylesheet" href="../css/mobile.css" media="only screen and (max-width: 768px)">
+	</head>
+
+	<body>
+		<div id="loader-wrapper">
+			<div id="loader">
+				<pre id="code-display"></pre><span class="blinking-cursor">|</span>
+			</div>
+		</div>
+
+		<main id="page-content" style="display: none;">
+		<nav>
+			<div class="nav-container">
+				<a href="index.html" class="logo">
+					<span>&lt;/Samuel Ellis&gt;</span>
+				</a>
+				<div class="links">
+					<a class="link">Home</a>
+					<a class="link" href="about.html">About Me</a>
+  					<a class="link" href="projects.html">Projects</a>
+  					<a class="link" href="contact.html">Contact</a>
+				</div>
+			</div>
+		</nav>
+
+		<section>
+            <div class="main-container">
+				<div class="code-display-container">
+					<pre><code id="final-code-display"></code></pre>
+				</div>
+			</div>
+        </section>
+		</main>
+
+		<script>
+			document.addEventListener("DOMContentLoaded", () => {
+				const codeLines = [
+					"def hello_world():",
+					"    for object in website:",
+					"    	load_links()",
+					"    	importCV(PDF)",
+					"    	display_cat_picture()",
+					"    	print('Finished!')",
+        			"",
+        			"if __name__ == '__main__':",
+        			"    hello_world()",
+					"    print('Welcome to my portfolio!')"
+					];
+		
+				const loaderWrapper = document.getElementById("loader-wrapper");
+            	const loader = document.getElementById("loader");
+            	const pageContent = document.getElementById("page-content");
+            	const codeDisplay = document.getElementById("code-display");
+            	const finalDisplay = document.getElementById("final-code-display");
+            	const mainCodeDisplayContainer = document.querySelector(".main-container .code-display-container");
+            	const cursor = document.querySelector(".blinking-cursor");
+
+            	let lineIndex = 0;
+            	let charIndex = 0;
+				let typingCancelled = false;
+
+            	function typeCharacter() {
+					if (typingCancelled) return;
+                	if (lineIndex < codeLines.length) {
+                    	const currentLine = codeLines[lineIndex];
+                    	if (charIndex < currentLine.length) {
+                        	const char = currentLine[charIndex];
+                        	const escapedChar = char === "<" ? "&lt;" : (char === ">" ? "&gt;" : char);
+                        	codeDisplay.textContent += escapedChar;
+                        	charIndex++;
+                        	setTimeout(typeCharacter, 50);
+                    	} else {
+                        	codeDisplay.textContent += "\n";
+                        	lineIndex++;
+                        	charIndex = 0;
+                        	setTimeout(typeCharacter, 200);
+                    	}
+                	} else {
+                    	completeLoading();
+                	}
+            	}
+
+				function completeLoading() {
+					if (typingCancelled) return;
+					typingCancelled = true;
+					fadeOutLoader();
+					showFinalCode();
+					fadeInHomepageContent();
+				}
+
+            	function fadeOutLoader() {
+                	loaderWrapper.style.opacity = 0;
+                	setTimeout(() => {
+                    	loaderWrapper.style.display = "none";
+                	}, 500); // Match CSS transition
+            	}
+
+            	function showFinalCode() {
+                	finalDisplay.textContent = codeDisplay.textContent;
+                	mainCodeDisplayContainer.style.display = "block";
+            	}
+
+            	function fadeInHomepageContent() {
+                	pageContent.style.display = "block";
+                	// Force reflow
+                	pageContent.offsetHeight;
+                	pageContent.style.opacity = 1;
+            	}
+
+				document.addEventListener("click", () => {
+					if (!typingCancelled) {
+						typingCancelled = true;
+						showFinalCode(); // Show full code
+						fadeOutLoader();
+						fadeInHomepageContent();
+					}
+				});
+
+            	typeCharacter(); // Start typing animation
+        	});
+    	</script>
+	</body>
+</html>

@@ -6,7 +6,7 @@
 
 body {
   background: #000;
-  color: #0f0;
+  color: rgb(65, 243, 65);
   font-family: 'Courier New', Courier, monospace;
   height: 100vh;
   overflow: hidden;
@@ -17,7 +17,7 @@ body {
   height: 100vh;
   padding: 20px;
   overflow-y: auto;
-  background: #000;
+  background: #191a18;
 }
 
 .terminal-line {
@@ -26,7 +26,7 @@ body {
 }
 
 .prompt {
-  color: #0f0;
+  color: rgb(65, 243, 65);
 }
 
 .user-input {
@@ -43,8 +43,8 @@ body {
   color: #ff0000;
 }
 
-.system {
-  color: #888;
+.system, .ascii-title {
+  color: #aaa7a7;
 }
 
 .warning {
@@ -60,19 +60,19 @@ body {
 #user-input {
   background: transparent;
   border: none;
-  color: #0f0;
+  color: rgb(65, 243, 65);
   font-family: 'Courier New', Courier, monospace;
   font-size: 16px;
   outline: none;
   flex: 1;
-  caret-color: #0f0;
+  caret-color: rgb(65, 243, 65);
 }
 
 .cursor {
   display: inline-block;
   width: 8px;
   height: 16px;
-  background: #0f0;
+  background: rgb(65, 243, 65);
   animation: blink 1s infinite;
   margin-left: 2px;
 }
@@ -103,11 +103,11 @@ body {
 }
 
 #terminal::-webkit-scrollbar-track {
-  background: #000;
+  background: #191a18;
 }
 
 #terminal::-webkit-scrollbar-thumb {
-  background: #0f0;
+  background: rgb(65, 243, 65);
 }
 
 #terminal::-webkit-scrollbar-thumb:hover {
@@ -122,12 +122,12 @@ body {
   padding: 5px 10px;
   border-radius: 3px;
   font-size: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid #0f0;
+  background: #191a18;
+  border: 1px solid rgb(65, 243, 65);
 }
 
 .status-indicator.connected {
-  color: #0f0;
+  color: rgb(65, 243, 65);
 }
 
 .status-indicator.disconnected {

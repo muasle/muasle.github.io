@@ -1,300 +1,292 @@
 // Configuration
 const CONFIG = {
-  // Local API URL - update this to match your local server
-  API_BASE_URL: 'http://localhost:3000/api',
-  
-  // Alternative: If you want to make it configurable
-  // API_BASE_URL: localStorage.getItem('apiUrl') || 'http://localhost:3000/api'
+  host: 'http://localhost:11434',
+  model: 'llama3.2'
 };
 
-// DOM Elements
 const terminal = document.getElementById('terminal');
 const output = document.getElementById('output');
 const userInput = document.getElementById('user-input');
 
 // State
-let commandHistory = [];
-let historyIndex = -1;
-let isProcessing = false;
-let isConnected = false;
+let promptHistory = [];    // saves prompt history
+let historyIndex = -1;      // tracks position
+let isProcessing = false;   // prevents too many prompts
+let websocket = null;       // web connection to TD
+let response = '';
 
 // Initialize
-window.addEventListener('load', () => {
+function init(){
+  userInput.addEventListener('keydown', handleKeyDown);
   userInput.focus();
-  checkConnection();
-  loadHistory();
-});
+  connectToTouchDesigner();
+  checkStatus();
+}
 
-// Check API connection
-async function checkConnection() {
-  try {
-    const response = await fetch(`${CONFIG.API_BASE_URL}/health`, {
-      method: 'GET',
-      signal: AbortSignal.timeout(3000) // 3 second timeout
-    });
-    
-    if (response.ok) {
-      isConnected = true;
-      addLine('<span class="system">✓ Connected to local API server</span>');
-    } else {
-      handleDisconnection();
-    }
-  } catch (error) {
-    handleDisconnection();
+// Check Keyboard Press
+function handleKeyDown(e){
+  if(e.key === 'Enter'){
+    handleprompt();
+  }
+  else if (e.key === 'ArrowUp'){
+    navigateHistory('up');
   }
 }
 
-function handleDisconnection() {
-  isConnected = false;
-  addLine('<span class="warning">⚠ Warning: Local API server not connected</span>');
-  addLine('<span class="system">Please ensure the backend server is running on ' + CONFIG.API_BASE_URL + '</span>');
-  addLine('<span class="system">Run: npm start (in the backend directory)</span>');
-  addLine('<span class="system">================================</span>');
-}
-
-// Handle input
-userInput.addEventListener('keydown', async (e) => {
-  if (e.key === 'Enter' && !isProcessing) {
-    const input = userInput.value.trim();
-    if (input) {
-      commandHistory.push(input);
-      historyIndex = commandHistory.length;
-      await processCommand(input);
-      userInput.value = '';
-    }
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    if (historyIndex > 0) {
-      historyIndex--;
-      userInput.value = commandHistory[historyIndex];
-    }
-  } else if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    if (historyIndex < commandHistory.length - 1) {
+function navigateHistory(direction){
+  if (direction === 'up' && historyIndex < promptHistory.length - 1){
       historyIndex++;
-      userInput.value = commandHistory[historyIndex];
-    } else {
-      historyIndex = commandHistory.length;
+      userInput.value = promptHistory[promptHistory.length - 1 - historyIndex];
+  } 
+  else if (direction === 'down' && historyIndex > 0){
+      historyIndex--;
+      userInput.value = promptHistory[promptHistory.length - 1 - historyIndex];
+  } 
+  else if (direction === 'down' && historyIndex === 0){
+      historyIndex = -1;
       userInput.value = '';
+  }
+}
+
+
+// Handle prompts
+async function handleprompt() {
+    if (isProcessing) return;
+    
+    const prompt = userInput.value.trim();
+    if (!prompt) return;
+    
+    // Add to history
+    promptHistory.push(prompt);
+    historyIndex = -1;
+    
+    // Display user input
+    addLine(`user@terminal:~$ ${prompt}`, 'user-input');
+    
+    // Clear input
+    userInput.value = '';
+    
+    // Process prompt
+    isProcessing = true;
+    
+    if (prompt.toLowerCase() === 'help'){
+        showHelp();
+        isProcessing = false;
+    } 
+    else if (prompt.toLowerCase() === 'clear'){
+        clearTerminal();
+        isProcessing = false;
+    } 
+    else if (prompt.toLowerCase() === 'status'){
+        await showStatus();
+        isProcessing = false;
+    } 
+    else if (prompt.toLowerCase() === 'history'){
+        showHistory();
+        isProcessing = false;
+    } 
+    else if (prompt.toLowerCase() === 'last'){
+        showLastResponse();
+        isProcessing = false;
+    } 
+    else{
+        // Send prompt to Ollama (no restrictions)
+        await generateResponse(prompt);
+        isProcessing = false;
     }
-  } else if (e.key === 'l' && e.ctrlKey) {
-    e.preventDefault();
-    clearTerminal();
-  }
-});
+    
+    scrollToBottom();
+}
 
-// Process commands
-async function processCommand(input) {
-  isProcessing = true;
-  
-  // Display user input
-  addLine(`<span class="prompt">user@terminal:~$ </span><span class="user-input">${escapeHtml(input)}</span>`);
 
-  // Handle special commands
-  const command = input.toLowerCase().trim();
-  
-  if (command === 'help') {
-    showHelp();
-    isProcessing = false;
-    return;
-  }
+async function generateResponse(prompt){
+  addLine('The AI is thinking...', 'bot-response');
 
-  if (command === 'clear') {
-    clearTerminal();
-    isProcessing = false;
-    return;
-  }
-
-  if (command === 'history') {
-    await showHistory();
-    isProcessing = false;
-    return;
-  }
-
-  if (command === 'status') {
-    await checkConnection();
-    isProcessing = false;
-    return;
-  }
-
-  if (command.startsWith('setapi ')) {
-    const newUrl = input.substring(7).trim();
-    CONFIG.API_BASE_URL = newUrl;
-    localStorage.setItem('apiUrl', newUrl);
-    addLine(`<span class="system">API URL updated to: ${escapeHtml(newUrl)}</span>`);
-    await checkConnection();
-    isProcessing = false;
-    return;
-  }
-
-  // Check connection before sending to API
-  if (!isConnected) {
-    addLine('<span class="error">Error: Not connected to API server</span>');
-    addLine('<span class="system">Type "status" to check connection</span>');
-    isProcessing = false;
-    return;
-  }
-
-  // Show loading indicator
-  const loadingLine = addLine('<span class="loading">Processing</span>');
-
-  try {
-    // Send to chatbot API
-    const response = await fetch(`${CONFIG.API_BASE_URL}/chat`, {
+  try{
+    const response = await fetch(`${CONFIG.host}/api/generate`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ prompt: input }),
-      signal: AbortSignal.timeout(30000) // 30 second timeout
+      body: JSON.stringify({
+          model: CONFIG.model,
+          prompt: prompt,  // Send prompt as-is, no modification
+          stream: false
+      })
     });
 
-    // Remove loading indicator
-    loadingLine.remove();
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    if(!response.ok){
+      throw new Error('Error: API Request Failed');
     }
 
     const data = await response.json();
-    
-    // Display bot response
-    addLine(`<span class="bot-response">${escapeHtml(data.response)}</span>`);
-    
-    if (data.id) {
-      addLine(`<span class="system">[Message ID: ${data.id} | ${new Date(data.timestamp).toLocaleTimeString()}]</span>`);
-    }
+    const aiResponse = data.response;
 
-  } catch (error) {
-    loadingLine.remove();
-    
-    if (error.name === 'AbortError') {
-      addLine(`<span class="error">Error: Request timed out</span>`);
-    } else {
-      addLine(`<span class="error">Error: ${escapeHtml(error.message)}</span>`);
-      isConnected = false;
-      addLine(`<span class="system">Connection lost. Type "status" to reconnect.</span>`);
+    latestResponse = aiResponse;
+
+    addLine('─────────────────────────────────────────────────────────', 'system');
+    addLine('AI RESPONSE:', 'bot-response');
+    addLine(aiResponse, 'bot-response');
+    addLine('─────────────────────────────────────────────────────────', 'system');
+
+    connectToTouchDesigner({
+      type: 'text_response',
+      prompt: prompt,
+      response: aiResponse,
+      timestamp: Date.now()
+    });
+
+    // TEST
+    //addLine('sending ---------------', 'system');
+  }
+
+  catch(error){
+    addLine(`ERROR: ${error.message}`, 'error');
+  }
+}
+
+
+async function checkStatus(){
+  try{
+    const response = await fetch(`${CONFIG.host}/api/tags`);
+    if (response.ok){
+      addLine('Ollama Connected', 'system');
     }
   }
 
-  isProcessing = false;
-  scrollToBottom();
+  catch(error){
+    addLine('Error: Ollama Disconnected', 'system');
+  }
 }
 
-// Add line to terminal
-function addLine(html) {
-  const line = document.createElement('div');
-  line.className = 'terminal-line';
-  line.innerHTML = html;
-  output.appendChild(line);
-  scrollToBottom();
-  return line;
+
+function connectToTouchDesigner(){
+    try{
+      websocket = new WebSocket('ws://localhost:8080');
+      
+      websocket.onopen = () => {
+          addLine('TouchDesigner connected', 'system');
+      };
+      
+      websocket.onerror = () => {
+          addLine('Error: TouchDesigner not connected', 'warning');
+      };
+      
+      websocket.onclose = () => {
+          console.log('TouchDesigner disconnected');
+      };
+      
+  } catch (error) {
+      console.log('TouchDesigner connection failed');
+  }
 }
 
-// Clear terminal
-function clearTerminal() {
-  output.innerHTML = '';
+
+function sendToTouchDesigner(data){
+  if (websocket && websocket.readyState === WebSocket.OPEN) {
+      websocket.send(JSON.stringify(data));
+      return true;
+  }
+  return false;
 }
 
-// Show help
-function showHelp() {
-  addLine('<span class="system">Available commands:</span>');
-  addLine('<span class="system">  help       - Show this help message</span>');
-  addLine('<span class="system">  clear      - Clear the terminal</span>');
-  addLine('<span class="system">  history    - Show chat history</span>');
-  addLine('<span class="system">  status     - Check API connection status</span>');
-  addLine('<span class="system">  setapi URL - Change API endpoint URL</span>');
-  addLine('<span class="system">  Ctrl+L     - Clear terminal (shortcut)</span>');
-  addLine('<span class="system">  ↑/↓        - Navigate command history</span>');
-  addLine('<span class="system"></span>');
-  addLine('<span class="system">Current API: ' + escapeHtml(CONFIG.API_BASE_URL) + '</span>');
-  addLine('<span class="system">Any other input will be sent to the chatbot.</span>');
+
+function showHelp(){
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+  addLine('AVAILABLE promptS:', 'prompt');
+  addLine('  help                 - Show this help message', 'system');
+  addLine('  clear                - Clear terminal screen', 'system');
+  addLine('  status               - Check system status', 'system');
+  addLine('  history              - Show prompt history', 'system');
+  addLine('  last                 - Show last AI response', 'system');
+  addLine('  <any text>           - Send to AI (responds freely)', 'system');
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+  addLine('EXAMPLES:', 'prompt');
+  addLine('  Tell me a story about space', 'warning');
+  addLine('  What is the meaning of life?', 'warning');
+  addLine('  Write a haiku about technology', 'warning');
+  addLine('  Generate random numbers', 'warning');
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
 }
 
-// Load and show chat history
-async function loadHistory() {
-  if (!isConnected) return;
+
+async function showStatus(){
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+  addLine('SYSTEM STATUS:', 'prompt');
   
   try {
-    const response = await fetch(`${CONFIG.API_BASE_URL}/history`, {
-      signal: AbortSignal.timeout(5000)
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      if (data.history && data.history.length > 0) {
-        addLine('<span class="system">Loading previous chat history...</span>');
-        // Only show last 5 conversations on load
-        const recentHistory = data.history.slice(-5);
-        recentHistory.forEach(item => {
-          addLine(`<span class="prompt">user@terminal:~$ </span><span class="user-input">${escapeHtml(item.prompt)}</span>`);
-          addLine(`<span class="bot-response">${escapeHtml(item.response)}</span>`);
-        });
-        if (data.history.length > 5) {
-          addLine(`<span class="system">... (${data.history.length - 5} older messages. Type "history" to view all)</span>`);
-        }
-        addLine('<span class="system">================================</span>');
+      const response = await fetch(`${CONFIG.host}/api/tags`);
+      if (response.ok) {
+          addLine(`  Ollama: CONNECTED`, 'system');
+          addLine(`  Active Model: ${CONFIG.model}`, 'system');
       }
-    }
   } catch (error) {
-    console.error('Failed to load history:', error);
+      addLine(`  Ollama: OFFLINE`, 'error');
   }
+  
+  // Check TouchDesigner
+  const tdStatus = websocket && websocket.readyState === WebSocket.OPEN;
+  addLine(`  TouchDesigner:   ${tdStatus ? 'CONNECTED' : 'STANDBY'}`, tdStatus ? 'system' : 'warning');
+  
+  addLine(`  Prompts Run:    ${promptHistory.length}`, 'system');
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
 }
 
-// Show history command
-async function showHistory() {
-  if (!isConnected) {
-    addLine('<span class="error">Error: Not connected to API server</span>');
-    return;
+
+function showHistory() {
+  if (promptHistory.length === 0) {
+      addLine('No prompts in history', 'system');
+      return;
   }
+  
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+  addLine('PROMPT HISTORY:', 'prompt');
+  promptHistory.forEach((cmd, index) => {
+      addLine(`  ${index + 1}. ${cmd}`, 'system');
+  });
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+}
 
-  try {
-    const response = await fetch(`${CONFIG.API_BASE_URL}/history`, {
-      signal: AbortSignal.timeout(5000)
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    if (data.history && data.history.length > 0) {
-      addLine('<span class="system">Chat History (' + data.history.length + ' messages):</span>');
-      addLine('<span class="system">================================</span>');
-      data.history.forEach((item, index) => {
-        addLine(`<span class="system">[${index + 1}] ${new Date(item.timestamp).toLocaleString()}</span>`);
-        addLine(`<span class="user-input">  User: ${escapeHtml(item.prompt)}</span>`);
-        addLine(`<span class="bot-response">  Bot: ${escapeHtml(item.response)}</span>`);
-        addLine('<span class="system">---</span>');
-      });
-    } else {
-      addLine('<span class="system">No chat history found.</span>');
-    }
-  } catch (error) {
-    addLine(`<span class="error">Error loading history: ${escapeHtml(error.message)}</span>`);
-    isConnected = false;
+
+function showLastResponse(){
+  if (!latestResponse) {
+      addLine('No response yet', 'system');
+      return;
   }
+  
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
+  addLine('LAST AI RESPONSE:', 'prompt');
+  addLine(latestResponse, 'bot-response');
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
 }
 
-// Scroll to bottom
-function scrollToBottom() {
-  terminal.scrollTop = terminal.scrollHeight;
+
+function clearTerminal(){
+  output.innerHTML = '';
+  addLine('Terminal cleared', 'system');
 }
 
-// Escape HTML to prevent XSS
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
+
+function addLine(text, className = ''){
+  const line = document.createElement('div');
+  line.className = `terminal-line ${className}`;
+  line.textContent = text;
+  output.appendChild(line);
 }
 
-// Keep focus on input
-document.addEventListener('click', () => {
-  userInput.focus();
-});
 
-// Prevent losing focus
-userInput.addEventListener('blur', () => {
-  setTimeout(() => userInput.focus(), 0);
-});
+function scrollToBottom(){
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+
+window.addEventListener('load', init);
+
+
+window.visualizeAI = {
+    generate: generateResponse,
+    sendToTD: sendToTouchDesigner,
+    getLastResponse: () => latestResponse,
+    getHistory: () => commandHistory,
+    clear: clearTerminal
+};

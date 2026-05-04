@@ -8,6 +8,7 @@ const CONFIG = {
 const terminal = document.getElementById('terminal');
 const output = document.getElementById('output');
 const userInput = document.getElementById('user-input');
+const inputLine = document.getElementById('input-line');
 
 // State
 let promptHistory = [];
@@ -15,6 +16,59 @@ let historyIndex = -1;
 let isProcessing = false;
 let oscSocket = null;  // Changed from oscPort
 let latestResponse = '';
+
+
+function init() {
+  const asciiTitle = document.querySelector('.ascii-title');
+  
+  // Hide everything initially
+  if (inputLine) inputLine.style.display = 'none';
+  if (asciiTitle) asciiTitle.style.display = 'none';
+  userInput.disabled = true;
+  output.innerHTML = '';
+
+  // Show only the start prompt
+  addLine('PRESS [ENTER] TO START...', 'system');
+
+  const startListener = (e) => {
+    if (e.key === 'Enter') {
+      window.removeEventListener('keydown', startListener);
+      output.innerHTML = ''; // Clear the "Press Enter" message
+      runSlowBoot(); // Start the slow loading sequence
+    }
+  };
+  window.addEventListener('keydown', startListener);
+}
+
+async function runSlowBoot() {
+  const asciiTitle = document.querySelector('.ascii-title');
+  
+  // A. Slowly draw the ASCII Title
+  if (asciiTitle) {
+    const fullText = asciiTitle.textContent;
+    const lines = fullText.split('\n');
+    asciiTitle.textContent = '';
+    asciiTitle.style.display = 'block';
+
+    for (let line of lines) {
+      asciiTitle.textContent += line + '\n';
+      scrollToBottom();
+      await new Promise(r => setTimeout(r, 200)); // Very slow line drawing
+    }
+  }
+  
+  initOSC(); // Connect to TouchDesigner
+  
+  await checkStatus(); // Connect to AI
+  
+  if (inputLine) inputLine.style.display = 'flex';
+  userInput.disabled = false;
+  userInput.focus();
+  
+  // Enable regular input handling
+  userInput.addEventListener('keydown', handleKeyDown);
+}
+
 
 // Initialize OSC with raw WebSocket
 function initOSC() {
@@ -51,14 +105,6 @@ function sendOSC(address, args) {
   return false;
 }
 
-// Initialize
-function init(){
-  userInput.addEventListener('keydown', handleKeyDown);
-  userInput.focus();
-  initOSC();  // Changed from connectToTouchDesigner
-  checkStatus();
-}
-
 // Check Keyboard Press
 function handleKeyDown(e){
   if(e.key === 'Enter'){
@@ -66,21 +112,6 @@ function handleKeyDown(e){
   }
   else if (e.key === 'ArrowUp'){
     navigateHistory('up');
-  }
-}
-
-function navigateHistory(direction){
-  if (direction === 'up' && historyIndex < promptHistory.length - 1){
-      historyIndex++;
-      userInput.value = promptHistory[promptHistory.length - 1 - historyIndex];
-  } 
-  else if (direction === 'down' && historyIndex > 0){
-      historyIndex--;
-      userInput.value = promptHistory[promptHistory.length - 1 - historyIndex];
-  } 
-  else if (direction === 'down' && historyIndex === 0){
-      historyIndex = -1;
-      userInput.value = '';
   }
 }
 
@@ -104,24 +135,12 @@ async function handleprompt() {
     // Process prompt
     isProcessing = true;
     
-    if (prompt.toLowerCase() === 'help'){
-        showHelp();
-        isProcessing = false;
-    } 
-    else if (prompt.toLowerCase() === 'clear'){
+    if (prompt.toLowerCase() === 'clear'){
         clearTerminal();
-        isProcessing = false;
-    } 
-    else if (prompt.toLowerCase() === 'status'){
-        await showStatus();
-        isProcessing = false;
-    } 
-    else if (prompt.toLowerCase() === 'history'){
-        showHistory();
-        isProcessing = false;
-    } 
-    else if (prompt.toLowerCase() === 'last'){
-        showLastResponse();
+
+        sendOSC('/ai/prompt', [{ type: 's', value: 'clear' }]);
+        sendOSC('/ai/promptcount', [{ type: 'i', value: promptHistory.length }]);
+        
         isProcessing = false;
     } 
     else{
@@ -175,7 +194,7 @@ async function generateResponse(prompt){
       { type: 's', value: prompt }
     ]);
 
-    addLine('→ Data sent to TouchDesigner via OSC', 'system');
+    //addLine('→ Data sent to TouchDesigner via OSC', 'system');
   }
 
   catch(error){
@@ -193,71 +212,6 @@ async function checkStatus(){
   catch(error){
     addLine('Error: Ollama Disconnected', 'system');
   }
-}
-
-async function showStatus(){
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-  addLine('SYSTEM STATUS:', 'prompt');
-  
-  try {
-      const response = await fetch(`${CONFIG.host}/api/tags`);
-      if (response.ok) {
-          addLine(`  Ollama: CONNECTED`, 'system');
-          addLine(`  Active Model: ${CONFIG.model}`, 'system');
-      }
-  } catch (error) {
-      addLine(`  Ollama: OFFLINE`, 'error');
-  }
-  
-  const oscStatus = oscPort && oscPort.socket.readyState === WebSocket.OPEN;
-  addLine(`  TouchDesigner (OSC): ${oscStatus ? 'CONNECTED' : 'STANDBY'}`, oscStatus ? 'system' : 'warning');
-  
-  addLine(`  Prompts Run: ${promptHistory.length}`, 'system');
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-}
-
-function showHistory() {
-  if (promptHistory.length === 0) {
-      addLine('No prompts in history', 'system');
-      return;
-  }
-  
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-  addLine('PROMPT HISTORY:', 'prompt');
-  promptHistory.forEach((cmd, index) => {
-      addLine(`  ${index + 1}. ${cmd}`, 'system');
-  });
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-}
-
-function showLastResponse(){
-  if (!latestResponse) {
-      addLine('No response yet', 'system');
-      return;
-  }
-  
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-  addLine('LAST AI RESPONSE:', 'prompt');
-  addLine(latestResponse, 'bot-response');
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-}
-
-function showHelp(){
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-  addLine('AVAILABLE COMMANDS:', 'prompt');
-  addLine('  help                 - Show this help message', 'system');
-  addLine('  clear                - Clear terminal screen', 'system');
-  addLine('  status               - Check system status', 'system');
-  addLine('  history              - Show prompt history', 'system');
-  addLine('  last                 - Show last AI response', 'system');
-  addLine('  <any text>           - Send to AI (responds freely)', 'system');
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
-  addLine('EXAMPLES:', 'prompt');
-  addLine('  Tell me a story about space', 'warning');
-  addLine('  What is the meaning of life?', 'warning');
-  addLine('  Write a haiku about technology', 'warning');
-  addLine('  Generate random numbers', 'warning');
-  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'system');
 }
 
 function clearTerminal(){
@@ -282,8 +236,5 @@ window.addEventListener('load', init);
 window.visualizeAI = {
     generate: generateResponse,
     sendOSC: sendOSC,
-    getLastResponse: () => latestResponse,
-    getHistory: () => promptHistory,
-    getPromptCount: () => promptHistory.length,
     clear: clearTerminal
 };

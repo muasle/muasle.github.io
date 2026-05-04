@@ -18,7 +18,7 @@ body {
   height: 100vh;
   padding: 20px;
   overflow-y: auto;
-  background: #191a18;
+  background: #000000;
 }
 
 .terminal-line {
@@ -104,15 +104,15 @@ body {
 }
 
 #terminal::-webkit-scrollbar-track {
-  background: #191a18;
+  background: #000000;
 }
 
 #terminal::-webkit-scrollbar-thumb {
-  background: rgb(65, 243, 65);
+  background: #1f1e1e;
 }
 
 #terminal::-webkit-scrollbar-thumb:hover {
-  background: #0c0;
+  background: #1f1e1e;
 }
 
 /* Connection status indicator */
@@ -123,7 +123,7 @@ body {
   padding: 5px 10px;
   border-radius: 3px;
   font-size: 12px;
-  background: #191a18;
+  background: #000000;
   border: 1px solid rgb(65, 243, 65);
 }
 
